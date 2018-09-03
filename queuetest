@@ -1,0 +1,37 @@
+# python-multithreading-sample
+from queue import Queue
+from threading import Thread
+import time
+import requests
+
+
+# function the queue is running
+def api_call(q):
+    while True:
+        item = q.get()
+        r = requests.get(item)
+        r.status_code
+        print(r.status_code)
+        q.task_done()
+
+
+# queue creation and max threads param
+q = Queue(maxsize=0)
+num_threads = 2
+
+# thread worker creation
+for i in range(num_threads):
+    # choose function and the input arguments
+    worker = Thread(target=api_call, args=(q,))
+    worker.setDaemon(True)
+    worker.start()
+
+now = time.time()
+print(now)
+for y in range(10):
+    for x in range(100):
+        q.put('https://api.github.com/user')
+    q.join()
+    print("Batch " + str(y) + " Done")
+q.join()
+print(time.time() - now)
